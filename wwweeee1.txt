@@ -57,15 +57,16 @@ int main() {
     }
 
     // Вывод результатов
-    printf("\nLp.   Название точки   Координаты   Расстояние   Маршрут\n");
-    printf("---------------------------------------------------------\n");
+    printf("\nLp.   Название точки   Координаты        Расстояние    Маршрут\n");
+    printf("------------------------------------------------------------\n");
 
-    double distance_from_start = 0.0;
-    printf("%-5d %-16s (%.2f, %.2f) %-12s %.2f\n", 1, points[0].name, points[0].x, points[0].y, "-", distance_from_start);
+    int distance_from_start = 0;
+    printf("%-5d %-16s (%.0f, %.0f) %-13s %d\n", 1, points[0].name, points[0].x, points[0].y, "-", distance_from_start);
 
     for (int i = 1; i < num_points; i++) {
-        distance_from_start += distances[i - 1];
-        printf("%-5d %-16s (%.2f, %.2f) %-12.2f %.2f\n", i + 1, points[i].name, points[i].x, points[i].y, distances[i - 1], distance_from_start);
+        int rounded_distance = (int)round(distances[i - 1]);
+        distance_from_start += rounded_distance;
+        printf("%-5d %-16s (%.0f, %.0f) %-13d %d\n", i + 1, points[i].name, points[i].x, points[i].y, rounded_distance, distance_from_start);
     }
 
     // Освобождение памяти
@@ -74,3 +75,4 @@ int main() {
 
     return 0;
 }
+
