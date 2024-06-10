@@ -1,0 +1,58 @@
+import math
+
+# Funkcja do obliczania odległości euklidesowej między dwoma punktami
+def oblicz_odleglosc(punkt1, punkt2):
+    x1, y1 = punkt1
+    x2, y2 = punkt2
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+# Funkcja do zbierania danych o punktach nawigacyjnych
+def wprowadz_dane():
+    punkty = []
+    while True:
+        nazwa = input("Wprowadź nazwę punktu (lub wpisz 'koniec' aby zakończyć): ")
+        if nazwa.lower() == 'koniec':
+            break
+        try:
+            x = float(input("Wprowadź współrzędną X punktu: "))
+            y = float(input("Wprowadź współrzędną Y punktu: "))
+        except ValueError:
+            print("Błędna współrzędna. Proszę wprowadzić liczbę.")
+            continue
+        punkty.append((nazwa, (x, y)))
+    return punkty
+
+# Funkcja do podsumowania wycieczki
+def podsumowanie_wycieczki(punkty):
+    if len(punkty) < 2:
+        print("Nie ma wystarczającej liczby punktów do obliczenia trasy.")
+        return
+
+    total_distance = 0
+    distances = []
+
+    # Wylicz odległości pomiędzy kolejnymi punktami i sumuj całkowitą drogę
+    for i in range(1, len(punkty)):
+        odleglosc = oblicz_odleglosc(punkty[i-1][1], punkty[i][1])
+        total_distance += odleglosc
+        distances.append(odleglosc)
+
+    # Wyświetl podsumowanie
+    print("\nPodsumowanie wycieczki:")
+    print(f"{'Punkt':<15} {'Odległość od poprzedniego punktu':<35} {'Całkowita przebyta droga':<25}")
+    
+    total_distance_from_start = 0
+    print(f"{punkty[0][0]:<15} {'-':<35} {'0.0':<25}")
+    
+    for i in range(1, len(punkty)):
+        total_distance_from_start += distances[i-1]
+        print(f"{punkty[i][0]:<15} {distances[i-1]:<35.2f} {total_distance_from_start:<25.2f}")
+
+# Główna funkcja programu
+def main():
+    print("Program zbierający dane o punktach nawigacyjnych wycieczki.")
+    punkty = wprowadz_dane()
+    podsumowanie_wycieczki(punkty)
+
+if __name__ == "__main__":
+    main()
