@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+
+#define MAX_POINTS 100
+#define NAME_LENGTH 50
+
+// Определение структуры для точки навигации
+typedef struct {
+    char name[NAME_LENGTH];
+    double x;
+    double y;
+} Point;
+
+// Функция для вычисления расстояния между двумя точками
+double calculate_distance(Point p1, Point p2) {
+    return sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+}
+
+// Функция для ввода данных о точках навигации
+int input_points(Point points[]) {
+    int count = 0;
+    char input[NAME_LENGTH];
+    
+    while (1) {
+        printf("Введите название точки (или 'конец' для завершения): ");
+        scanf("%s", input);
+        
+        if (strcmp(input, "конец") == 0) {
+            break;
+        }
+        
+        strcpy(points[count].name, input);
+        printf("Введите координату X: ");
+        scanf("%lf", &points[count].x);
+        printf("Введите координату Y: ");
+        scanf("%lf", &points[count].y);
+        
+        count++;
+        if (count >= MAX_POINTS) {
+            printf("Достигнуто максимальное количество точек.\n");
+            break;
+        }
+    }
+    return count;
+}
+
+// Функция для вывода краткой информации о поездке
+void print_summary(Point points[], int count) {
+    if (count < 2) {
+        printf("Недостаточно точек для расчета маршрута.\n");
+        return;
+    }
+    
+    double total_distance = 0;
+    double distances[MAX_POINTS] = {0};
+    
+    printf("\nКраткая информация о поездке:\n");
+    printf("%-15s %-35s %-25s\n", "Точка", "Расстояние от предыдущей точки", "Суммарное пройденное расстояние");
+    
+    printf("%-15s %-35s %-25s\n", points[0].name, "-", "0.0");
+    
+    for (int i = 1; i < count; i++) {
+        distances[i] = calculate_distance(points[i-1], points[i]);
+        total_distance += distances[i];
+        printf("%-15s %-35.2f %-25.2f\n", points[i].name, distances[i], total_distance);
+    }
+}
+
+int main() {
+    Point points[MAX_POINTS];
+    int count;
+    
+    printf("Программа для сбора данных о точках навигации и вычисления пройденного расстояния.\n");
+    count = input_points(points);
+    print_summary(points, count);
+    
+    return 0;
+}
