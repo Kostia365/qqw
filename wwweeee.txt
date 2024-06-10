@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+
+// Структура для хранения данных о точке
+typedef struct {
+    char name[50];
+    double x;
+    double y;
+} Point;
+
+// Функция для вычисления расстояния между двумя точками
+double calculate_distance(Point p1, Point p2) {
+    return sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+}
+
+// Основная функция программы
+int main() {
+    int num_points;
+    printf("Введите количество точек на маршруте: ");
+    scanf("%d", &num_points);
+
+    // Проверка на корректное количество точек
+    if (num_points < 2) {
+        printf("Количество точек должно быть не менее двух.\n");
+        return 1;
+    }
+
+    // Выделение памяти для точек
+    Point *points = (Point *)malloc(num_points * sizeof(Point));
+    if (points == NULL) {
+        printf("Ошибка выделения памяти.\n");
+        return 1;
+    }
+
+    // Сбор данных о точках
+    for (int i = 0; i < num_points; i++) {
+        printf("Введите название точки %d: ", i + 1);
+        scanf("%s", points[i].name);
+        printf("Введите координаты (x y) точки %d: ", i + 1);
+        scanf("%lf %lf", &points[i].x, &points[i].y);
+    }
+
+    // Вычисление расстояний
+    double total_distance = 0.0;
+    double *distances = (double *)malloc((num_points - 1) * sizeof(double));
+    if (distances == NULL) {
+        printf("Ошибка выделения памяти.\n");
+        free(points);
+        return 1;
+    }
+
+    for (int i = 1; i < num_points; i++) {
+        distances[i - 1] = calculate_distance(points[i - 1], points[i]);
+        total_distance += distances[i - 1];
+    }
+
+    // Вывод результатов
+    printf("\nКраткая информация о поездке:\n");
+    printf("%-15s %-35s %-25s\n", "Точка", "Расстояние от предыдущей точки", "Общее пройденное расстояние");
+
+    double distance_from_start = 0.0;
+    printf("%-15s %-35s %-25.2f\n", points[0].name, "-", 0.0);
+
+    for (int i = 1; i < num_points; i++) {
+        distance_from_start += distances[i - 1];
+        printf("%-15s %-35.2f %-25.2f\n", points[i].name, distances[i - 1], distance_from_start);
+    }
+
+    // Освобождение выделенной памяти
+    free(points);
+    free(distances);
+
+    return 0;
+}
