@@ -1,13 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
-#include <string.h>
 
-#define MAX_POINTS 100
-#define NAME_LENGTH 50
-
-// Определение структуры для точки навигации
+// Структура для хранения данных о точке
 typedef struct {
-    char name[NAME_LENGTH];
+    char name[50];
     double x;
     double y;
 } Point;
@@ -17,63 +14,63 @@ double calculate_distance(Point p1, Point p2) {
     return sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
 }
 
-// Функция для ввода данных о точках навигации
-int input_points(Point points[]) {
-    int count = 0;
-    char input[NAME_LENGTH];
-    
-    while (1) {
-        printf("Введите название точки (или 'конец' для завершения): ");
-        scanf("%s", input);
-        
-        if (strcmp(input, "конец") == 0) {
-            break;
-        }
-        
-        strcpy(points[count].name, input);
-        printf("Введите координату X: ");
-        scanf("%lf", &points[count].x);
-        printf("Введите координату Y: ");
-        scanf("%lf", &points[count].y);
-        
-        count++;
-        if (count >= MAX_POINTS) {
-            printf("Достигнуто максимальное количество точек.\n");
-            break;
-        }
-    }
-    return count;
-}
-
-// Функция для вывода краткой информации о поездке
-void print_summary(Point points[], int count) {
-    if (count < 2) {
-        printf("Недостаточно точек для расчета маршрута.\n");
-        return;
-    }
-    
-    double total_distance = 0;
-    double distances[MAX_POINTS] = {0};
-    
-    printf("\nКраткая информация о поездке:\n");
-    printf("%-15s %-35s %-25s\n", "Точка", "Расстояние от предыдущей точки", "Суммарное пройденное расстояние");
-    
-    printf("%-15s %-35s %-25s\n", points[0].name, "-", "0.0");
-    
-    for (int i = 1; i < count; i++) {
-        distances[i] = calculate_distance(points[i-1], points[i]);
-        total_distance += distances[i];
-        printf("%-15s %-35.2f %-25.2f\n", points[i].name, distances[i], total_distance);
-    }
-}
-
 int main() {
-    Point points[MAX_POINTS];
-    int count;
-    
-    printf("Программа для сбора данных о точках навигации и вычисления пройденного расстояния.\n");
-    count = input_points(points);
-    print_summary(points, count);
-    
+    int num_points;
+
+    // Запрос у пользователя количества точек
+    printf("Введите количество точек на маршруте: ");
+    scanf("%d", &num_points);
+
+    // Проверка корректности введенного количества точек
+    if (num_points < 2) {
+        printf("Количество точек должно быть не менее двух.\n");
+        return 1;
+    }
+
+    // Выделение памяти для точек
+    Point *points = (Point *)malloc(num_points * sizeof(Point));
+    if (points == NULL) {
+        printf("Ошибка выделения памяти.\n");
+        return 1;
+    }
+
+    // Сбор данных о точках
+    for (int i = 0; i < num_points; i++) {
+        printf("Введите название точки %d: ", i + 1);
+        scanf("%s", points[i].name);
+        printf("Введите координаты (x y) точки %d: ", i + 1);
+        scanf("%lf %lf", &points[i].x, &points[i].y);
+    }
+
+    // Вычисление расстояний
+    double *distances = (double *)malloc((num_points - 1) * sizeof(double));
+    if (distances == NULL) {
+        printf("Ошибка выделения памяти.\n");
+        free(points);
+        return 1;
+    }
+
+    double total_distance = 0.0;
+    for (int i = 1; i < num_points; i++) {
+        distances[i - 1] = calculate_distance(points[i - 1], points[i]);
+        total_distance += distances[i - 1];
+    }
+
+    // Вывод результатов
+    printf("\nLp.   Название точки   Координаты   Расстояние   Маршрут\n");
+    printf("---------------------------------------------------------\n");
+
+    double distance_from_start = 0.0;
+    printf("%-5d %-16s (%.2f, %.2f) %-12s %.2f\n", 1, points[0].name, points[0].x, points[0].y, "-", distance_from_start);
+
+    for (int i = 1; i < num_points; i++) {
+        distance_from_start += distances[i - 1];
+        printf("%-5d %-16s (%.2f, %.2f) %-12.2f %.2f\n", i + 1, points[i].name, points[i].x, points[i].y, distances[i - 1], distance_from_start);
+    }
+
+    // Освобождение памяти
+    free(points);
+    free(distances);
+
     return 0;
 }
