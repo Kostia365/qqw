@@ -29,10 +29,6 @@ int main() {
 
     // Выделение памяти для точек
     Point *points = (Point *)malloc(num_points * sizeof(Point));
-    if (points == NULL) {
-        printf("Ошибка выделения памяти.\n");
-        return 1;
-    }
 
     // Сбор данных о точках
     for (int i = 0; i < num_points; i++) {
@@ -44,12 +40,6 @@ int main() {
 
     // Вычисление расстояний
     double *distances = (double *)malloc((num_points - 1) * sizeof(double));
-    if (distances == NULL) {
-        printf("Ошибка выделения памяти.\n");
-        free(points);
-        return 1;
-    }
-
     double total_distance = 0.0;
     for (int i = 1; i < num_points; i++) {
         distances[i - 1] = calculate_distance(points[i - 1], points[i]);
@@ -75,4 +65,3 @@ int main() {
 
     return 0;
 }
-
